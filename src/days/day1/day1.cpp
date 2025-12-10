@@ -18,42 +18,45 @@ static actionValues actionStringToValues(std::string action) {
 }
 
 static int decipherPassword(list<string> actionList, bool countMidSpinZeros) {
-	int password = 0;
-	int position = startPosition;
+    int password = 0;
+    int position = startPosition;
 
-	for (string action : actionList) {
-		int originalPosition = position;
-		actionValues values = actionStringToValues(action);
+    for (string action : actionList) {
+        int originalPosition = position;
+        actionValues values = actionStringToValues(action);
 
-		if (values.direction) {
-			position = (position + values.magnitude);
-		}
-		else {
-			position = (position - values.magnitude);
-		}
+        int magnitude = values.magnitude;
+        int direction = values.direction ? +1 : -1;
 
-		if (countMidSpinZeros) { 
-			if (values.direction && position > maximumPosition)
-			{
-				password++;
-				password += floor((float)values.magnitude / (float)(maximumPosition));  //Not sure if this is correct
-			}
-			else if (!values.direction && position <= 0) {
-				password++;
-				password += floor((float)values.magnitude / (float)(maximumPosition));
-			}
-		}
+        int movement = direction * magnitude;
 
+        if (countMidSpinZeros) {
+            int steps = abs(movement);
+            int stepDir = (movement > 0 ? 1 : -1);
 
-		position %= maximumPosition;
+            for (int i = 1; i <= steps; ++i) {
+                int intermediate = (originalPosition + stepDir * i) % maximumPosition;
+                if (intermediate < 0) intermediate += maximumPosition;
 
-		if (position == 0)
-		{
-			password++;
-		}
-	}
-	return password;
+                if (intermediate == 0) {
+                    password++;
+                }
+            }
+        }
+
+        position = originalPosition + movement;
+        position %= maximumPosition;
+        if (position < 0) position += maximumPosition;
+
+        // If final resting position is 0, count that as well
+        if (position == 0) {
+            //password++;
+        }
+    }
+
+    return password;
 }
+
 
 static list<string> actionListFromFile(string filePath) {
 	ifstream inputFile(filePath);
