@@ -18,12 +18,14 @@ int main()
 		switch (choice) {
 			case 0:
 				running = false;
+				break;
 			case 1:
 				cout << "Please enter the file path for the input data: ";
 				string filePath;
 				cin >> filePath;
-				int result = RunDay1Challenge(filePath);
-				cout << "The result of the Day 1 Challenge is: " << result << endl << endl;
+				int result = RunDay1Challenge1(filePath);
+				cout << "The result of the Day 1 Challenge 1 is: " << result << endl;
+				cout << "And the result of Challenge 2 is: " << RunDay1Challenge2(filePath);
 				break;
 		}
 	}

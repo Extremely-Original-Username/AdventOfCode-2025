@@ -17,19 +17,35 @@ static actionValues actionStringToValues(std::string action) {
 	return values;
 }
 
-static int decipherPassword(list<string> actionList) {
+static int decipherPassword(list<string> actionList, bool countMidSpinZeros) {
 	int password = 0;
 	int position = startPosition;
 
 	for (string action : actionList) {
+		int originalPosition = position;
 		actionValues values = actionStringToValues(action);
 
 		if (values.direction) {
-			position = (position + values.magnitude) % maximumPosition;
+			position = (position + values.magnitude);
 		}
 		else {
-			position = (position - values.magnitude) % maximumPosition;
+			position = (position - values.magnitude);
 		}
+
+		if (countMidSpinZeros) { 
+			if (values.direction && position > maximumPosition)
+			{
+				password++;
+				password += floor((float)values.magnitude / (float)(maximumPosition));  //Not sure if this is correct
+			}
+			else if (!values.direction && position <= 0) {
+				password++;
+				password += floor((float)values.magnitude / (float)(maximumPosition));
+			}
+		}
+
+
+		position %= maximumPosition;
 
 		if (position == 0)
 		{
@@ -39,12 +55,11 @@ static int decipherPassword(list<string> actionList) {
 	return password;
 }
 
-static int RunDay1Challenge(string filePath) {
+static list<string> actionListFromFile(string filePath) {
 	ifstream inputFile(filePath);
 
 	if (!inputFile.is_open()) {
-		cerr << "Failed to open the file!" << endl;
-		return 1;
+		throw runtime_error("File not found");
 	}
 
 	list<string> actionList;
@@ -53,6 +68,19 @@ static int RunDay1Challenge(string filePath) {
 		actionList.push_back(line);
 	}
 
-	int password = decipherPassword(actionList);
+	return actionList;
+}
+
+static int RunDay1Challenge1(string filePath) {
+	list<string> actionList = actionListFromFile(filePath);
+
+	int password = decipherPassword(actionList, false);
+	return password;
+}
+
+static int RunDay1Challenge2(string filePath) {
+	list<string> actionList = actionListFromFile(filePath);
+
+	int password = decipherPassword(actionList, true);
 	return password;
 }
