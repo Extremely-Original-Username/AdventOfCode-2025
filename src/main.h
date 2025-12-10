@@ -1,8 +1,4 @@
-﻿// main.h : Include file for standard system include files,
-// or project specific include files.
+﻿#include <iostream>
 
-#pragma once
-
-#include <iostream>
-
-// TODO: Reference additional headers your program requires here.
+#include "days/day1/day1.h"
+#include "days/day1/day1.cpp"
